@@ -5,6 +5,8 @@ let currentTab = 'bookings';
 // Check authentication on page load
 document.addEventListener('DOMContentLoaded', function() {
     checkAuthAndLoad();
+    setupBookingActions();
+    setupEmailModal();
 });
 
 // Check authentication and load data
@@ -112,6 +114,8 @@ function displayBookings(bookings) {
         const row = document.createElement('tr');
         const date = booking.timestamp ? new Date(booking.timestamp).toLocaleDateString() : 'N/A';
         const time = booking.timestamp ? new Date(booking.timestamp).toLocaleTimeString() : '';
+        const status = (booking.status || 'pending').toLowerCase();
+        const hasId = Boolean(booking.id);
         
         row.innerHTML = `
             <td>${date}<br><small style="color: var(--text-light);">${time}</small></td>
@@ -123,6 +127,8 @@ function displayBookings(bookings) {
             <td>${booking.preferredTime || 'N/A'}</td>
             <td>${booking.pickupLocation || 'Not specified'}</td>
             <td>${booking.message || '-'}</td>
+            <td>${getStatusBadge(status)}</td>
+            <td>${hasId ? getBookingActions(status, booking.id) : '<span class="text-muted">Unavailable</span>'}</td>
         `;
         tableBody.appendChild(row);
     });
@@ -158,17 +164,28 @@ function displayContacts(contacts) {
         const row = document.createElement('tr');
         const date = contact.timestamp ? new Date(contact.timestamp).toLocaleDateString() : 'N/A';
         const time = contact.timestamp ? new Date(contact.timestamp).toLocaleTimeString() : '';
+        const customerName = `${contact.firstName || ''} ${contact.lastName || ''}`.trim() || 'Customer';
+        const contactId = contact.id || contact.timestamp || '';
         
         row.innerHTML = `
             <td>${date}<br><small style="color: var(--text-light);">${time}</small></td>
-            <td><strong>${contact.firstName || ''} ${contact.lastName || ''}</strong></td>
+            <td><strong>${customerName}</strong></td>
             <td>${contact.email || 'N/A'}</td>
             <td>${contact.phone || 'N/A'}</td>
             <td><span class="badge badge-contact">${formatService(contact.service)}</span></td>
             <td>${contact.message || '-'}</td>
+            <td>
+                <div class="contact-actions">
+                    <button class="contact-action btn-email" data-action="email" data-contact-id="${contactId}" data-email="${contact.email || ''}" data-name="${customerName}">Email Reply</button>
+                    <button class="contact-action btn-delete-contact" data-action="delete" data-contact-id="${contactId}">Delete</button>
+                </div>
+            </td>
         `;
         tableBody.appendChild(row);
     });
+    
+    // Setup contact action handlers after rendering
+    setupContactActions();
 }
 
 // Format lesson type
@@ -201,6 +218,127 @@ function formatService(service) {
     return services[service] || service;
 }
 
+function getStatusBadge(status) {
+    const safeStatus = ['pending', 'confirmed', 'rejected'].includes(status) ? status : 'pending';
+    const labelMap = {
+        pending: 'Pending',
+        confirmed: 'Confirmed',
+        rejected: 'Rejected'
+    };
+    return `<span class="status-badge ${safeStatus}">${labelMap[safeStatus]}</span>`;
+}
+
+function getBookingActions(status, bookingId) {
+    const confirmDisabled = status === 'confirmed';
+    const rejectDisabled = status === 'rejected';
+    return `
+        <div class="booking-actions">
+            <button class="booking-action btn-confirm" data-action="confirm" data-booking-id="${bookingId}" ${confirmDisabled ? 'disabled' : ''}>Confirm</button>
+            <button class="booking-action btn-reject" data-action="reject" data-booking-id="${bookingId}" ${rejectDisabled ? 'disabled' : ''}>Reject</button>
+            <button class="booking-action btn-delete" data-action="delete" data-booking-id="${bookingId}">Delete</button>
+        </div>
+    `;
+}
+
+function setupBookingActions() {
+    const tableBody = document.getElementById('bookings-table-body');
+    if (!tableBody) return;
+
+    tableBody.addEventListener('click', async function(event) {
+        const button = event.target.closest('.booking-action');
+        if (!button) return;
+
+        const bookingId = button.getAttribute('data-booking-id');
+        const action = button.getAttribute('data-action');
+
+        if (!bookingId || !action) {
+            showError('Unable to update booking. Missing booking identifier.');
+            return;
+        }
+
+        if (action === 'delete') {
+            if (!confirm('Are you sure you want to delete this booking? This action cannot be undone.')) {
+                return;
+            }
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = 'Deleting...';
+
+            try {
+                await deleteBooking(bookingId);
+                await loadData();
+            } catch (error) {
+                console.error('Delete error:', error);
+                showError(error.message || 'Failed to delete booking.');
+            } finally {
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+            return;
+        }
+
+        const status = action === 'confirm' ? 'confirmed' : 'rejected';
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = 'Updating...';
+
+        try {
+            await updateBookingStatus(bookingId, status);
+            await loadData();
+        } catch (error) {
+            console.error('Status update error:', error);
+            showError(error.message || 'Failed to update booking status.');
+        } finally {
+            button.disabled = false;
+            button.textContent = originalText;
+        }
+    });
+}
+
+async function updateBookingStatus(bookingId, status) {
+    const response = await fetch(`/api/admin/bookings/${bookingId}/status`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ status })
+    });
+
+    let data = {};
+    try {
+        data = await response.json();
+    } catch (error) {
+        console.error('Error parsing status update response:', error);
+    }
+
+    if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to update booking.');
+    }
+
+    return data.booking;
+}
+
+async function deleteBooking(bookingId) {
+    const response = await fetch(`/api/admin/bookings/${bookingId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    });
+
+    let data = {};
+    try {
+        data = await response.json();
+    } catch (error) {
+        console.error('Error parsing delete response:', error);
+    }
+
+    if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to delete booking.');
+    }
+
+    return data;
+}
+
 // Switch tabs
 function switchTab(tab) {
     currentTab = tab;
@@ -224,4 +362,209 @@ function showError(message) {
         }, 5000);
     }
 }
+
+// Setup contact action handlers
+function setupContactActions() {
+    const tableBody = document.getElementById('contacts-table-body');
+    if (!tableBody) return;
+
+    tableBody.addEventListener('click', async function(event) {
+        const button = event.target.closest('.contact-action');
+        if (!button) return;
+
+        const contactId = button.getAttribute('data-contact-id');
+        const action = button.getAttribute('data-action');
+
+        if (!contactId || !action) {
+            showError('Unable to process action. Missing contact identifier.');
+            return;
+        }
+
+        if (action === 'email') {
+            const email = button.getAttribute('data-email');
+            const name = button.getAttribute('data-name');
+            openEmailModal(email, name, contactId);
+        } else if (action === 'delete') {
+            if (!confirm('Are you sure you want to delete this contact inquiry? This action cannot be undone.')) {
+                return;
+            }
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = 'Deleting...';
+
+            try {
+                await deleteContact(contactId);
+                await loadData();
+            } catch (error) {
+                console.error('Delete error:', error);
+                showError(error.message || 'Failed to delete contact inquiry.');
+            } finally {
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }
+    });
+}
+
+// Email modal functions
+let currentContactId = null;
+
+function setupEmailModal() {
+    const form = document.getElementById('email-reply-form');
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await sendReplyEmail();
+        });
+    }
+
+    // Close modal when clicking outside
+    const modal = document.getElementById('email-modal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeEmailModal();
+            }
+        });
+    }
+}
+
+function openEmailModal(email, name, contactId) {
+    const modal = document.getElementById('email-modal');
+    const toInput = document.getElementById('reply-to');
+    const subjectInput = document.getElementById('reply-subject');
+    const messageInput = document.getElementById('reply-message');
+    const messageDiv = document.getElementById('email-message');
+
+    if (!modal || !toInput || !subjectInput || !messageInput) return;
+
+    currentContactId = contactId;
+    toInput.value = email || '';
+    subjectInput.value = 'Re: Your inquiry';
+    messageInput.value = `Dear ${name},\n\n`;
+    messageDiv.style.display = 'none';
+    messageDiv.textContent = '';
+
+    modal.style.display = 'block';
+    messageInput.focus();
+    messageInput.setSelectionRange(messageInput.value.length, messageInput.value.length);
+}
+
+function closeEmailModal() {
+    const modal = document.getElementById('email-modal');
+    const form = document.getElementById('email-reply-form');
+    const messageDiv = document.getElementById('email-message');
+
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    if (form) {
+        form.reset();
+    }
+    if (messageDiv) {
+        messageDiv.style.display = 'none';
+        messageDiv.textContent = '';
+    }
+    currentContactId = null;
+}
+
+async function sendReplyEmail() {
+    const toInput = document.getElementById('reply-to');
+    const subjectInput = document.getElementById('reply-subject');
+    const messageInput = document.getElementById('reply-message');
+    const messageDiv = document.getElementById('email-message');
+    const sendButton = document.querySelector('#email-reply-form .btn-send');
+
+    if (!toInput || !subjectInput || !messageInput || !currentContactId) {
+        showError('Missing required information to send email.');
+        return;
+    }
+
+    const toEmail = toInput.value.trim();
+    const subject = subjectInput.value.trim();
+    const message = messageInput.value.trim();
+
+    if (!toEmail || !subject || !message) {
+        if (messageDiv) {
+            messageDiv.className = 'form-message error';
+            messageDiv.textContent = 'Please fill in all fields.';
+            messageDiv.style.display = 'block';
+        }
+        return;
+    }
+
+    if (sendButton) {
+        sendButton.disabled = true;
+        sendButton.textContent = 'Sending...';
+    }
+
+    try {
+        const response = await fetch(`/api/admin/contacts/${currentContactId}/reply`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                to: toEmail,
+                subject: subject,
+                message: message
+            })
+        });
+
+        let data = {};
+        try {
+            data = await response.json();
+        } catch (error) {
+            console.error('Error parsing reply response:', error);
+        }
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || 'Failed to send email.');
+        }
+
+        if (messageDiv) {
+            messageDiv.className = 'form-message success';
+            messageDiv.textContent = 'Email sent successfully!';
+            messageDiv.style.display = 'block';
+        }
+
+        setTimeout(() => {
+            closeEmailModal();
+        }, 1500);
+    } catch (error) {
+        console.error('Send email error:', error);
+        if (messageDiv) {
+            messageDiv.className = 'form-message error';
+            messageDiv.textContent = error.message || 'Failed to send email.';
+            messageDiv.style.display = 'block';
+        }
+    } finally {
+        if (sendButton) {
+            sendButton.disabled = false;
+            sendButton.textContent = 'Send Email';
+        }
+    }
+}
+
+async function deleteContact(contactId) {
+    const response = await fetch(`/api/admin/contacts/${contactId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    });
+
+    let data = {};
+    try {
+        data = await response.json();
+    } catch (error) {
+        console.error('Error parsing delete response:', error);
+    }
+
+    if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to delete contact inquiry.');
+    }
+
+    return data;
+}
+
 

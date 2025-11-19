@@ -23,8 +23,8 @@ Drivingschool/
 ├── contact.html        # Contact & Booking page
 ├── styles.css          # Main stylesheet
 ├── script.js           # JavaScript functionality
-├── admin.html          # Admin dashboard page
-├── admin.js            # Admin dashboard JavaScript
+├── bookings.html       # Bookings & admin dashboard page
+├── bookings.js         # Bookings & admin dashboard JavaScript
 ├── data.json           # JSON data storage
 ├── server.py           # Python Flask server
 ├── requirements.txt    # Python dependencies
@@ -112,7 +112,7 @@ All form submissions are stored in `data.json` with the following structure:
 
 ## Admin Dashboard
 
-Access the admin dashboard at `/admin.html` to view all booking requests and contact inquiries.
+Access the admin dashboard at `/bookings.html` to view all booking requests and contact inquiries.
 
 **Default Password**: `admin123` (change this in production!)
 
@@ -125,8 +125,24 @@ Access the admin dashboard at `/admin.html` to view all booking requests and con
 - View all contact form submissions
 - Statistics dashboard showing total bookings and contacts
 - Today's activity counter
+- Confirm, reject, or delete booking requests
+- Automatic confirmation email to customers when bookings are accepted (requires SMTP configuration)
+- Unique date/time validation (prevents double-booking unless rejected)
 - Secure password-protected access
 - Session-based authentication
+
+### Email notifications (optional)
+
+To enable the confirmation email that is sent when a booking is accepted, configure the following environment variables:
+
+| Variable | Description |
+| --- | --- |
+| `SMTP_SERVER` | SMTP server host (e.g., `smtp.gmail.com`) |
+| `SMTP_PORT` | SMTP port (default `587`) |
+| `SMTP_USERNAME` | SMTP username |
+| `SMTP_PASSWORD` | SMTP password or app-specific password |
+| `SMTP_FROM_EMAIL` | Email address that appears in the **From** field |
+| `SMTP_USE_TLS` | Set to `true` (default) to enable STARTTLS |
 
 ## Important Notes
 

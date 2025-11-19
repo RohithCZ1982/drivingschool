@@ -157,6 +157,203 @@
             color: var(--text-light);
             margin-bottom: 1.5rem;
         }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 90px;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-badge.confirmed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-badge.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .booking-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .booking-actions button {
+            flex: 1 1 110px;
+            min-width: 100px;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .booking-actions button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .booking-actions .btn-confirm {
+            background: #10b981;
+        }
+        .booking-actions .btn-reject {
+            background: #ef4444;
+        }
+        .booking-actions .btn-delete {
+            background: #dc2626;
+        }
+        .booking-actions button:not(:disabled):hover {
+            transform: translateY(-2px);
+        }
+        .text-muted {
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+        .contact-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .contact-actions button {
+            flex: 1 1 auto;
+            min-width: 100px;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            font-size: 0.875rem;
+        }
+        .contact-actions button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .contact-actions .btn-email {
+            background: #3b82f6;
+        }
+        .contact-actions .btn-delete-contact {
+            background: #dc2626;
+        }
+        .contact-actions button:not(:disabled):hover {
+            transform: translateY(-2px);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-dark);
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            line-height: 1;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+        }
+        .close-modal:hover {
+            color: var(--text-dark);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        .btn-cancel {
+            padding: 0.75rem 1.5rem;
+            background: #e5e7eb;
+            color: var(--text-dark);
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-cancel:hover {
+            background: #d1d5db;
+        }
+        .btn-send {
+            padding: 0.75rem 1.5rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-send:hover {
+            background: #2563eb;
+        }
+        .btn-send:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -249,6 +446,8 @@
                                     <th>Preferred Time</th>
                                     <th>Pickup Location</th>
                                     <th>Notes</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="bookings-table-body">
@@ -274,6 +473,7 @@
                                     <th>Phone</th>
                                     <th>Service</th>
                                     <th>Message</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="contacts-table-body">
@@ -289,6 +489,35 @@
             </div>
         </div>
     </section>
+
+    <!-- Email Reply Modal -->
+    <div id="email-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📧 Reply to Contact Inquiry</h2>
+                <button class="close-modal" onclick="closeEmailModal()">&times;</button>
+            </div>
+            <form id="email-reply-form">
+                <div class="form-group">
+                    <label for="reply-to">To:</label>
+                    <input type="email" id="reply-to" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="reply-subject">Subject:</label>
+                    <input type="text" id="reply-subject" placeholder="Re: Your inquiry" required>
+                </div>
+                <div class="form-group">
+                    <label for="reply-message">Message:</label>
+                    <textarea id="reply-message" required></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEmailModal()">Cancel</button>
+                    <button type="submit" class="btn-send">Send Email</button>
+                </div>
+                <div id="email-message" class="form-message" style="display: none; margin-top: 1rem;"></div>
+            </form>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">

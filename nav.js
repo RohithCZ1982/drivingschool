@@ -43,7 +43,7 @@ function addAdminMenuItem() {
     const isBookingsPage = currentPage === 'bookings.html';
     
     adminMenuItem.innerHTML = `
-        <a href="bookings.html" class="${isBookingsPage ? 'active' : ''}">📊 Bookings</a>
+        <a href="bookings.html" class="${isBookingsPage ? 'active' : ''}"> Dashboard</a>
     `;
     
     // Add before Contact menu item if it exists, otherwise at the end

@@ -134,7 +134,10 @@ function setupBookingForm() {
             bookingForm.reset();
         } catch (error) {
             console.error('Error saving booking:', error);
-            showMessage('booking-form-message', 'There was an error booking your lesson. Please try again or call us directly.', 'error');
+            const message = error && error.message
+                ? error.message
+                : 'There was an error booking your lesson. Please try again or call us directly.';
+            showMessage('booking-form-message', message, 'error');
         }
     });
 }
@@ -144,24 +147,33 @@ async function saveToJSON(data) {
     try {
         // Try to save via server API first (if server.py is running)
         // Use relative URL - will work if served from server, fail gracefully if opened directly
+        let response;
         try {
-            const response = await fetch('/api/save', {
+            response = await fetch('/api/save', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(data)
             });
-
-            if (response.ok) {
-                const result = await response.json();
-                if (result.success) {
-                    console.log('Data saved successfully via server');
-                    return result;
-                }
-            }
-        } catch (serverError) {
+        } catch (networkError) {
             console.log('Server not available, using localStorage fallback');
+        }
+
+        if (response) {
+            let result = {};
+            try {
+                result = await response.json();
+            } catch (parseError) {
+                console.error('Error parsing server response:', parseError);
+            }
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Unable to save data at this time.');
+            }
+
+            console.log('Data saved successfully via server');
+            return result;
         }
 
         // Fallback: Use localStorage and log to console
@@ -180,6 +192,7 @@ async function saveToJSON(data) {
         if (data.type === 'contact') {
             existingData.contacts.push(data);
         } else if (data.type === 'booking') {
+            data.status = data.status || 'pending';
             existingData.bookings.push(data);
         }
 
@@ -202,6 +215,7 @@ function showMessage(elementId, message, type) {
     if (messageElement) {
         messageElement.textContent = message;
         messageElement.className = `form-message ${type}`;
+        messageElement.style.display = 'block';
         
         // Scroll to message
         messageElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

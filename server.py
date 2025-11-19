@@ -10,8 +10,10 @@ from flask_cors import CORS
 import json
 import os
 import secrets
+import smtplib
 from datetime import datetime
 from functools import wraps
+from email.mime.text import MIMEText
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app, supports_credentials=True)  # Enable CORS for all routes with credentials
@@ -25,6 +27,14 @@ ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
 # Use environment variable for data file path, default to current directory
 DATA_DIR = os.environ.get('DATA_DIR', '.')
 DATA_FILE = os.path.join(DATA_DIR, 'data.json')
+
+# Email configuration (optional)
+SMTP_SERVER = os.environ.get('SMTP_SERVER')
+SMTP_PORT = int(os.environ.get('SMTP_PORT', 587))
+SMTP_USERNAME = os.environ.get('SMTP_USERNAME')
+SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD')
+SMTP_FROM_EMAIL = os.environ.get('SMTP_FROM_EMAIL')
+SMTP_USE_TLS = os.environ.get('SMTP_USE_TLS', 'true').lower() != 'false'
 
 def read_data():
     """Read data from JSON file"""
@@ -46,6 +56,49 @@ def write_data(data):
         print(f'Error writing data file: {e}')
         return False
 
+def send_email(to_email, subject, body):
+    """Send an email using configured SMTP settings"""
+    if not (SMTP_SERVER and SMTP_USERNAME and SMTP_PASSWORD and SMTP_FROM_EMAIL):
+        print('Email configuration missing; skipping email notification.')
+        return False
+    
+    if not to_email:
+        print('Recipient email missing; skipping email notification.')
+        return False
+    
+    message = MIMEText(body, 'plain')
+    message['Subject'] = subject
+    message['From'] = SMTP_FROM_EMAIL
+    message['To'] = to_email
+    
+    try:
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            if SMTP_USE_TLS:
+                server.starttls()
+            server.login(SMTP_USERNAME, SMTP_PASSWORD)
+            server.send_message(message)
+        return True
+    except Exception as e:
+        print(f'Error sending email: {e}')
+        return False
+
+def send_booking_confirmation_email(booking):
+    """Send confirmation email to the customer when booking is accepted"""
+    email = (booking.get('email') or '').strip()
+    first_name = (booking.get('firstName') or '').strip()
+    last_name = (booking.get('lastName') or '').strip()
+    customer_name = (f'{first_name} {last_name}'.strip()) or 'Customer'
+    
+    body = (
+        f'Dear {customer_name}\n\n'
+        'Thanks for the booking. We are happy to inform that your booking is confirmed.\n\n'
+        'With regards,\n'
+        'Safe Driving.'
+    )
+    subject = 'Booking Confirmation - Safe Driving'
+    
+    return send_email(email, subject, body)
+
 @app.route('/api/save', methods=['POST', 'OPTIONS'])
 def save_data():
     """Save form data to JSON file"""
@@ -62,9 +115,35 @@ def save_data():
         
         # Add new data based on type
         if new_data.get('type') == 'contact':
+            new_data.setdefault('id', secrets.token_hex(8))
             existing_data['contacts'].append(new_data)
         elif new_data.get('type') == 'booking':
-            existing_data['bookings'].append(new_data)
+            existing_data.setdefault('bookings', [])
+            bookings = existing_data['bookings']
+            
+            preferred_date = new_data.get('preferredDate')
+            preferred_time = new_data.get('preferredTime')
+            
+            if preferred_date and preferred_time:
+                conflict = next(
+                    (
+                        booking for booking in bookings
+                        if booking.get('preferredDate') == preferred_date
+                        and booking.get('preferredTime') == preferred_time
+                        and (booking.get('status', 'pending') != 'rejected')
+                    ),
+                    None
+                )
+                if conflict:
+                    return jsonify({
+                        'success': False,
+                        'message': 'This date and time is already booked. Please choose another slot unless the existing booking is rejected.'
+                    }), 409
+            
+            new_data.setdefault('id', secrets.token_hex(8))
+            new_data['status'] = new_data.get('status', 'pending')
+            new_data['statusUpdatedAt'] = datetime.now().isoformat()
+            bookings.append(new_data)
         
         if write_data(existing_data):
             return jsonify({'success': True, 'message': 'Data saved successfully'}), 200
@@ -136,6 +215,138 @@ def get_bookings():
         'total_contacts': len(data.get('contacts', []))
     }), 200
 
+@app.route('/api/admin/bookings/<booking_id>/status', methods=['PATCH', 'OPTIONS'])
+@admin_required
+def update_booking_status(booking_id):
+    """Update the status of a booking"""
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        payload = request.get_json() or {}
+        new_status = payload.get('status', '').lower()
+        
+        if new_status not in ['pending', 'confirmed', 'rejected']:
+            return jsonify({'success': False, 'message': 'Invalid status value'}), 400
+        
+        data = read_data()
+        bookings = data.get('bookings', [])
+        
+        for booking in bookings:
+            if booking.get('id') == booking_id:
+                previous_status = (booking.get('status') or 'pending').lower()
+                if new_status != 'rejected':
+                    preferred_date = booking.get('preferredDate')
+                    preferred_time = booking.get('preferredTime')
+                    if preferred_date and preferred_time:
+                        conflict = next(
+                            (
+                                other for other in bookings
+                                if other is not booking
+                                and other.get('preferredDate') == preferred_date
+                                and other.get('preferredTime') == preferred_time
+                                and (other.get('status', 'pending') != 'rejected')
+                            ),
+                            None
+                        )
+                        if conflict:
+                            return jsonify({
+                                'success': False,
+                                'message': 'Another booking already occupies this date and time.'
+                            }), 409
+                
+                booking['status'] = new_status
+                booking['statusUpdatedAt'] = datetime.now().isoformat()
+                
+                if write_data(data):
+                    if previous_status != 'confirmed' and new_status == 'confirmed':
+                        send_booking_confirmation_email(booking)
+                    return jsonify({'success': True, 'booking': booking}), 200
+                else:
+                    return jsonify({'success': False, 'message': 'Error saving data'}), 500
+        
+        return jsonify({'success': False, 'message': 'Booking not found'}), 404
+    
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Invalid data format: {str(e)}'}), 400
+
+@app.route('/api/admin/bookings/<booking_id>', methods=['DELETE', 'OPTIONS'])
+@admin_required
+def delete_booking(booking_id):
+    """Delete a booking"""
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        data = read_data()
+        bookings = data.get('bookings', [])
+        
+        # Find and remove the booking
+        original_length = len(bookings)
+        data['bookings'] = [b for b in bookings if b.get('id') != booking_id]
+        
+        if len(data['bookings']) == original_length:
+            return jsonify({'success': False, 'message': 'Booking not found'}), 404
+        
+        if write_data(data):
+            return jsonify({'success': True, 'message': 'Booking deleted successfully'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'Error saving data'}), 500
+    
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error deleting booking: {str(e)}'}), 400
+
+@app.route('/api/admin/contacts/<contact_id>/reply', methods=['POST', 'OPTIONS'])
+@admin_required
+def send_contact_reply(contact_id):
+    """Send a reply email to a contact inquiry"""
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        payload = request.get_json() or {}
+        to_email = payload.get('to', '').strip()
+        subject = payload.get('subject', '').strip()
+        message = payload.get('message', '').strip()
+        
+        if not to_email or not subject or not message:
+            return jsonify({'success': False, 'message': 'Missing required fields'}), 400
+        
+        # Send the email
+        if send_email(to_email, subject, message):
+            return jsonify({'success': True, 'message': 'Email sent successfully'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'Failed to send email. Check SMTP configuration.'}), 500
+    
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error sending email: {str(e)}'}), 400
+
+@app.route('/api/admin/contacts/<contact_id>', methods=['DELETE', 'OPTIONS'])
+@admin_required
+def delete_contact(contact_id):
+    """Delete a contact inquiry"""
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    try:
+        data = read_data()
+        contacts = data.get('contacts', [])
+        
+        # Find and remove the contact
+        original_length = len(contacts)
+        data['contacts'] = [c for c in contacts if c.get('id') != contact_id and c.get('timestamp') != contact_id]
+        
+        if len(data['contacts']) == original_length:
+            return jsonify({'success': False, 'message': 'Contact inquiry not found'}), 404
+        
+        if write_data(data):
+            return jsonify({'success': True, 'message': 'Contact inquiry deleted successfully'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'Error saving data'}), 500
+    
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error deleting contact: {str(e)}'}), 400
+
 @app.route('/')
 def index():
     """Serve login.html as default page"""
@@ -160,14 +371,6 @@ def services():
 def contact():
     """Serve contact.html"""
     return send_from_directory('.', 'contact.html')
-
-@app.route('/admin.html')
-def admin():
-    """Serve admin.html (protected by client-side auth check)"""
-    # Note: The admin.html page itself checks authentication client-side
-    # If not authenticated, it shows the login form
-    # Server-side protection is handled by API endpoints via @admin_required decorator
-    return send_from_directory('.', 'admin.html')
 
 @app.route('/login.html')
 def login_page():
