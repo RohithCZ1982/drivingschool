@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: drive-it-yourself
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn server:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: FLASK_ENV
+        value: production
+      # IMPORTANT: Set these in Render dashboard for security
+      # - key: ADMIN_PASSWORD
+      #   value: your-secure-password-here
+      # - key: SECRET_KEY
+      #   value: your-secret-key-here
+

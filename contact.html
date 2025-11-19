@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact & Booking - Drive It Yourself</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>🚗 Drive It Yourself</h1>
+                <p class="tagline">Create your independence.</p>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="contact.html" class="active">Contact</a></li>
+            </ul>
+            <div class="nav-cta">
+                <a href="tel:0437483154" class="btn-call">📞 CALL US NOW</a>
+                <a href="contact.html" class="btn-primary">Book a Lesson</a>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Contact Us & Book a Lesson</h1>
+            <p>Get in touch with our friendly team</p>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="container">
+            <div class="contact-grid">
+                <!-- Contact Form -->
+                <div class="contact-form-container">
+                    <h2>Send Us a Message</h2>
+                    <form id="contact-form" class="contact-form">
+                        <div class="form-group">
+                            <label for="name">Name *</label>
+                            <div class="name-inputs">
+                                <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+                                <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" placeholder="0437 483 154" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="service">How can we help? *</label>
+                            <select id="service" name="service" required>
+                                <option value="">Select a service...</option>
+                                <option value="driving-lessons">Driving lessons</option>
+                                <option value="licence-upgrade">Licence upgrades; auto to manual</option>
+                                <option value="senior-renewal">Senior licence renewal</option>
+                                <option value="overseas-licence">Overseas licence holders</option>
+                                <option value="moped-licence">Moped licence (R-N)</option>
+                                <option value="motorcycle-lessons">LAMS motorcycle lessons (R-E)</option>
+                                <option value="gift-certificates">Gift certificates</option>
+                                <option value="lesson-packages">Lesson packages</option>
+                                <option value="other">Anything else?</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Tell us a little bit more *</label>
+                            <textarea id="message" name="message" rows="5" placeholder="Please provide details about your inquiry..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary btn-large">Submit</button>
+                        <div id="contact-form-message" class="form-message"></div>
+                    </form>
+                </div>
+
+                <!-- Booking Form -->
+                <div class="booking-form-container">
+                    <h2>Book a Lesson</h2>
+                    <form id="booking-form" class="booking-form">
+                        <div class="form-group">
+                            <label for="booking-name">Name *</label>
+                            <div class="name-inputs">
+                                <input type="text" id="booking-firstName" name="firstName" placeholder="First Name" required>
+                                <input type="text" id="booking-lastName" name="lastName" placeholder="Last Name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="booking-phone">Phone Number *</label>
+                            <input type="tel" id="booking-phone" name="phone" placeholder="0437 483 154" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="booking-email">Email *</label>
+                            <input type="email" id="booking-email" name="email" placeholder="your.email@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lesson-type">Lesson Type *</label>
+                            <select id="lesson-type" name="lessonType" required>
+                                <option value="">Select lesson type...</option>
+                                <option value="automatic">Automatic Driving Lesson</option>
+                                <option value="manual">Manual Driving Lesson</option>
+                                <option value="motorcycle">Motorcycle Lesson</option>
+                                <option value="moped">Moped Lesson</option>
+                                <option value="licence-upgrade">Licence Upgrade</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="preferred-date">Preferred Date *</label>
+                            <input type="date" id="preferred-date" name="preferredDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="preferred-time">Preferred Time *</label>
+                            <select id="preferred-time" name="preferredTime" required>
+                                <option value="">Select time...</option>
+                                <option value="07:00">7:00 AM</option>
+                                <option value="08:00">8:00 AM</option>
+                                <option value="09:00">9:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="12:00">12:00 PM</option>
+                                <option value="13:00">1:00 PM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                                <option value="17:00">5:00 PM</option>
+                                <option value="18:00">6:00 PM</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="pickup-location">Pickup Location</label>
+                            <input type="text" id="pickup-location" name="pickupLocation" placeholder="Home, School, or Work address">
+                        </div>
+                        <div class="form-group">
+                            <label for="booking-message">Additional Notes</label>
+                            <textarea id="booking-message" name="message" rows="4" placeholder="Any special requirements or notes..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary btn-large">Book Lesson</button>
+                        <div id="booking-form-message" class="form-message"></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="contact-info">
+                <div class="contact-info-card">
+                    <h3>📞 Phone</h3>
+                    <p><a href="tel:0437483154">0437 483 154</a></p>
+                </div>
+                <div class="contact-info-card">
+                    <h3>📧 Email</h3>
+                    <p><a href="mailto:info@driveityourself.com">info@driveityourself.com</a></p>
+                </div>
+                <div class="contact-info-card">
+                    <h3>🕐 Hours</h3>
+                    <p>Monday - Sunday: 7am - 6pm</p>
+                    <p>After hours by appointment only</p>
+                </div>
+                <div class="contact-info-card">
+                    <h3>📍 Service Areas</h3>
+                    <p>Rockingham, Mandurah</p>
+                    <p>Surrounding Suburbs</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Drive It Yourself</h3>
+                    <p>Create your independence.</p>
+                    <p class="footer-tagline">Dedicated | Experienced | Safety-focused</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p>📞 <a href="tel:0437483154">0437 483 154</a></p>
+                    <p>📧 <a href="mailto:info@driveityourself.com">info@driveityourself.com</a></p>
+                    <p>🕐 Monday - Sunday: 7am - 6pm</p>
+                    <p>After hours by appointment only</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Service Areas</h4>
+                    <p>Rockingham</p>
+                    <p>Mandurah</p>
+                    <p>Surrounding Suburbs</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Drive It Yourself. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

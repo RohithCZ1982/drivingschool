@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Drive It Yourself</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .admin-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 0;
+        }
+        .admin-card {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        .logout-btn {
+            padding: 0.5rem 1.5rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover {
+            background: white;
+            color: var(--primary-color);
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 5rem auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .login-container h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-dark);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            background: var(--bg-light);
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        .admin-content {
+            padding: 2rem;
+        }
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .data-table thead {
+            background: var(--primary-color);
+            color: white;
+        }
+        .data-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .data-table tbody tr:hover {
+            background: var(--bg-light);
+        }
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .badge-booking {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .badge-contact {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="admin-container">
+        <div class="login-container">
+            <h1>🔐 Admin Login</h1>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter admin password" required>
+                </div>
+                <button type="submit" class="btn-primary btn-large" style="width: 100%;">Login</button>
+                <div id="login-message" class="form-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="admin-container" style="display: none;">
+        <div class="admin-card">
+            <div class="admin-header">
+                <h1>📊 Admin Dashboard</h1>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-bookings">0</div>
+                    <div class="stat-label">Total Bookings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="total-contacts">0</div>
+                    <div class="stat-label">Total Contacts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="today-bookings">0</div>
+                    <div class="stat-label">Bookings Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="today-contacts">0</div>
+                    <div class="stat-label">Contacts Today</div>
+                </div>
+            </div>
+
+            <div class="admin-content">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('bookings')">📅 Bookings</button>
+                    <button class="tab" onclick="switchTab('contacts')">📧 Contact Inquiries</button>
+                </div>
+
+                <div id="error-container"></div>
+
+                <div id="bookings-tab" class="tab-content active">
+                    <div id="bookings-loading" class="loading">Loading bookings...</div>
+                    <div id="bookings-content" style="display: none;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Lesson Type</th>
+                                    <th>Preferred Date</th>
+                                    <th>Preferred Time</th>
+                                    <th>Pickup Location</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookings-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="bookings-empty" class="empty-state" style="display: none;">
+                        <div class="empty-state-icon">📭</div>
+                        <h3>No bookings yet</h3>
+                        <p>Booking requests will appear here</p>
+                    </div>
+                </div>
+
+                <div id="contacts-tab" class="tab-content">
+                    <div id="contacts-loading" class="loading">Loading contacts...</div>
+                    <div id="contacts-content" style="display: none;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Service</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contacts-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="contacts-empty" class="empty-state" style="display: none;">
+                        <div class="empty-state-icon">📭</div>
+                        <h3>No contact inquiries yet</h3>
+                        <p>Contact form submissions will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
+

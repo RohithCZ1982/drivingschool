@@ -1,0 +1,59 @@
+{
+  "contacts": [],
+  "bookings": [],
+  "testimonials": [
+    {
+      "name": "Sarah Johnson",
+      "message": "Excellent driving school! The instructor was patient and professional. I passed my test on the first try!",
+      "rating": 5
+    },
+    {
+      "name": "Michael Chen",
+      "message": "Great experience learning to drive. The lessons were well-structured and I felt confident behind the wheel.",
+      "rating": 5
+    },
+    {
+      "name": "Emma Williams",
+      "message": "Highly recommend! The instructor made learning to drive manual transmission easy and stress-free.",
+      "rating": 5
+    },
+    {
+      "name": "James Anderson",
+      "message": "The dual control system gave me so much confidence. I felt safe learning with Drive It Yourself.",
+      "rating": 5
+    },
+    {
+      "name": "Lisa Thompson",
+      "message": "Flexible scheduling and convenient pickup service. The instructor was knowledgeable and friendly.",
+      "rating": 5
+    }
+  ],
+  "services": [
+    {
+      "id": "new-driver",
+      "name": "New Driver Lessons",
+      "description": "Comprehensive driving lessons for first-time drivers",
+      "types": ["automatic", "manual"],
+      "price": "Contact for pricing"
+    },
+    {
+      "id": "licence-upgrade",
+      "name": "Licence Upgrade",
+      "description": "Upgrade from automatic to manual transmission licence",
+      "price": "Contact for pricing"
+    },
+    {
+      "id": "motorcycle",
+      "name": "Motorcycle Lessons",
+      "description": "LAMS motorcycle lessons (R-E)",
+      "price": "Contact for pricing"
+    },
+    {
+      "id": "moped",
+      "name": "Moped Lessons",
+      "description": "Moped licence lessons (R-N)",
+      "price": "Contact for pricing"
+    }
+  ]
+}
+
