@@ -60,23 +60,24 @@ function addAdminMenuItem() {
 
 // Add logout button to navigation
 function addLogoutButton() {
-    const navActions = document.getElementById('nav-actions');
-    if (!navActions) return;
-    
-    // Check if logout button already exists
-    if (document.querySelector('.btn-icon-logout')) {
-        return;
-    }
-    
-    // Create logout button
-    const logoutButton = document.createElement('button');
-    logoutButton.className = 'btn-icon btn-icon-logout';
-    logoutButton.title = 'Logout';
-    logoutButton.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    logoutButton.onclick = logout;
-    
-    // Add at the beginning of nav-actions
-    navActions.insertBefore(logoutButton, navActions.firstChild);
+    const navActionContainers = document.querySelectorAll('.nav-actions');
+    if (!navActionContainers.length) return;
+
+    const createLogoutButton = () => {
+        const button = document.createElement('button');
+        button.className = 'btn-icon btn-icon-logout';
+        button.title = 'Logout';
+        button.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        button.onclick = logout;
+        return button;
+    };
+
+    navActionContainers.forEach(container => {
+        if (!container.querySelector('.btn-icon-logout')) {
+            const logoutButton = createLogoutButton();
+            container.insertBefore(logoutButton, container.firstChild);
+        }
+    });
 }
 
 // Logout function - works for both admin and regular users
