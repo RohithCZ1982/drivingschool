@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Safe Steering</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .login-page-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #DC2626 0%, #FCD34D 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .login-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 3rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        .login-card h1 {
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+        .login-card .subtitle {
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
+        }
+        .login-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .login-option {
+            padding: 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: var(--text-dark);
+            display: block;
+            background: var(--bg-white);
+        }
+        .login-option:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .login-option.active {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+        .login-option-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .login-option-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .login-option-description {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .admin-login-form {
+            display: none;
+            margin-top: 2rem;
+            text-align: left;
+        }
+        .admin-login-form.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        .form-message {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .form-message.success {
+            background: #d1fae5;
+            color: #065f46;
+            display: block;
+        }
+        .form-message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            display: block;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page-container">
+        <div class="login-card">
+            <div class="logo-container" style="justify-content: center; margin-bottom: 1rem;">
+                <img src="logo.svg" alt="Safe Steering Logo" style="width: 60px; height: 60px;">
+                <h1 style="margin: 0; margin-left: 0.75rem;">Safe Steering</h1>
+            </div>
+            <p class="subtitle">Welcome! Please choose your login option</p>
+            
+            <div class="login-options" id="login-options">
+                <div class="login-option" id="user-option" onclick="selectUser()">
+                    <div class="login-option-icon">👤</div>
+                    <div class="login-option-title">User</div>
+                    <div class="login-option-description">Access the main website directly</div>
+                </div>
+                
+                <div class="login-option" id="admin-option" onclick="selectAdmin()">
+                    <div class="login-option-icon">🔐</div>
+                    <div class="login-option-title">Admin</div>
+                    <div class="login-option-description">Administrator access with authentication</div>
+                </div>
+            </div>
+
+            <div class="admin-login-form" id="admin-login-form">
+                <h2 style="margin-bottom: 1.5rem; text-align: center;">Admin Login</h2>
+                <form id="admin-form">
+                    <div class="form-group">
+                        <label for="admin-password">Password</label>
+                        <input type="password" id="admin-password" name="password" placeholder="Enter admin password" required>
+                    </div>
+                    <button type="submit" class="btn-login">Login as Admin</button>
+                    <div id="admin-message" class="form-message"></div>
+                    <a href="#" class="back-link" onclick="showOptions()">← Back to options</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>
+

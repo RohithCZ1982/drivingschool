@@ -138,6 +138,11 @@ def get_bookings():
 
 @app.route('/')
 def index():
+    """Serve login.html as default page"""
+    return send_from_directory('.', 'login.html')
+
+@app.route('/index.html')
+def home():
     """Serve index.html"""
     return send_from_directory('.', 'index.html')
 
@@ -158,8 +163,21 @@ def contact():
 
 @app.route('/admin.html')
 def admin():
-    """Serve admin.html"""
+    """Serve admin.html (protected by client-side auth check)"""
+    # Note: The admin.html page itself checks authentication client-side
+    # If not authenticated, it shows the login form
+    # Server-side protection is handled by API endpoints via @admin_required decorator
     return send_from_directory('.', 'admin.html')
+
+@app.route('/login.html')
+def login_page():
+    """Serve login.html"""
+    return send_from_directory('.', 'login.html')
+
+@app.route('/bookings.html')
+def bookings():
+    """Serve bookings.html"""
+    return send_from_directory('.', 'bookings.html')
 
 @app.route('/<path:path>')
 def serve_static(path):

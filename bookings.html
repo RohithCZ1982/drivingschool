@@ -3,70 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Safe Steering</title>
+    <title>Bookings - Safe Steering</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        .admin-container {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .bookings-container {
+            min-height: calc(100vh - 200px);
             padding: 2rem 0;
         }
-        .admin-card {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-        .admin-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .admin-header h1 {
-            margin: 0;
-            font-size: 2rem;
-        }
-        .logout-btn {
-            padding: 0.5rem 1.5rem;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 2px solid white;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        .logout-btn:hover {
-            background: white;
-            color: var(--primary-color);
-        }
-        .login-container {
-            max-width: 400px;
-            margin: 5rem auto;
-            background: white;
-            padding: 3rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        .login-container h1 {
+        .bookings-header {
             text-align: center;
             margin-bottom: 2rem;
-            color: var(--text-dark);
         }
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
-            padding: 2rem;
-            background: var(--bg-light);
+            margin-bottom: 3rem;
         }
         .stat-card {
             background: white;
@@ -85,9 +40,6 @@
             color: var(--text-light);
             font-size: 0.9rem;
         }
-        .admin-content {
-            padding: 2rem;
-        }
         .tabs {
             display: flex;
             gap: 1rem;
@@ -104,10 +56,14 @@
             color: var(--text-light);
             border-bottom: 3px solid transparent;
             transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
         }
         .tab.active {
             color: var(--primary-color);
             border-bottom-color: var(--primary-color);
+        }
+        .tab:hover {
+            color: var(--primary-color);
         }
         .tab-content {
             display: none;
@@ -122,6 +78,7 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: var(--shadow);
+            margin-bottom: 2rem;
         }
         .data-table thead {
             background: var(--primary-color);
@@ -161,6 +118,9 @@
             text-align: center;
             padding: 3rem;
             color: var(--text-light);
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
         }
         .empty-state-icon {
             font-size: 4rem;
@@ -170,6 +130,9 @@
             text-align: center;
             padding: 3rem;
             color: var(--text-light);
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
         }
         .error-message {
             background: #fee2e2;
@@ -178,52 +141,92 @@
             border-radius: 5px;
             margin-bottom: 1rem;
         }
+        .unauthorized-message {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin: 2rem 0;
+        }
+        .unauthorized-message h2 {
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+        .unauthorized-message p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div id="login-screen" class="admin-container">
-        <div class="login-container">
-            <h1>🔐 Admin Login</h1>
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" placeholder="Enter admin password" required>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <div class="logo-container">
+                    <img src="logo.svg" alt="Safe Steering Logo" class="logo-img">
+                    <h1>Safe Steering</h1>
                 </div>
-                <button type="submit" class="btn-primary btn-large" style="width: 100%;">Login</button>
-                <div id="login-message" class="form-message"></div>
-            </form>
+                <p class="tagline">Professional Driving School</p>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="nav-actions" id="nav-actions">
+                <a href="tel:0433021077" class="btn-icon" title="Call Us"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 5a2 2 0 0 1 2-2h3.28a1 1 0 0 1 .948.684l1.498 4.493a1 1 0 0 1-.502 1.21l-2.257 1.13a11.042 11.042 0 0 0 5.516 5.516l1.13-2.257a1 1 0 0 1 1.21-.502l4.493 1.498a1 1 0 0 1 .684.949V19a2 2 0 0 1-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                <a href="contact.html" class="btn-icon btn-icon-book" title="Book a Lesson"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 4h-1V2a1 1 0 0 0-2 0v2H8V2a1 1 0 0 0-2 0v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM5 8h14v12H5V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 2v4M16 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></a>
+            </div>
         </div>
-    </div>
+    </nav>
 
-    <!-- Admin Dashboard -->
-    <div id="admin-dashboard" class="admin-container" style="display: none;">
-        <div class="admin-card">
-            <div class="admin-header">
-                <h1>📊 Admin Dashboard</h1>
-                <button class="logout-btn" onclick="logout()">Logout</button>
-            </div>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="total-bookings">0</div>
-                    <div class="stat-label">Total Bookings</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="total-contacts">0</div>
-                    <div class="stat-label">Total Contacts</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="today-bookings">0</div>
-                    <div class="stat-label">Bookings Today</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="today-contacts">0</div>
-                    <div class="stat-label">Contacts Today</div>
-                </div>
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>📊 Bookings & Contacts</h1>
+            <p>View all bookings and contact inquiries</p>
+        </div>
+    </section>
+
+    <!-- Bookings Section -->
+    <section class="bookings-container">
+        <div class="container">
+            <!-- Unauthorized Message (hidden by default) -->
+            <div id="unauthorized-message" class="unauthorized-message" style="display: none;">
+                <h2>🔒 Access Denied</h2>
+                <p>You must be logged in as an administrator to view bookings.</p>
+                <a href="login.html" class="btn-primary">Go to Login</a>
             </div>
 
-            <div class="admin-content">
+            <!-- Authorized Content (hidden by default) -->
+            <div id="bookings-content" style="display: none;">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-bookings">0</div>
+                        <div class="stat-label">Total Bookings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-contacts">0</div>
+                        <div class="stat-label">Total Contacts</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="today-bookings">0</div>
+                        <div class="stat-label">Bookings Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="today-contacts">0</div>
+                        <div class="stat-label">Contacts Today</div>
+                    </div>
+                </div>
+
                 <div class="tabs">
                     <button class="tab active" onclick="switchTab('bookings')">📅 Bookings</button>
                     <button class="tab" onclick="switchTab('contacts')">📧 Contact Inquiries</button>
@@ -233,7 +236,7 @@
 
                 <div id="bookings-tab" class="tab-content active">
                     <div id="bookings-loading" class="loading">Loading bookings...</div>
-                    <div id="bookings-content" style="display: none;">
+                    <div id="bookings-table-wrapper" style="display: none;">
                         <table class="data-table">
                             <thead>
                                 <tr>
@@ -261,7 +264,7 @@
 
                 <div id="contacts-tab" class="tab-content">
                     <div id="contacts-loading" class="loading">Loading contacts...</div>
-                    <div id="contacts-content" style="display: none;">
+                    <div id="contacts-table-wrapper" style="display: none;">
                         <table class="data-table">
                             <thead>
                                 <tr>
@@ -285,9 +288,49 @@
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <script src="admin.js"></script>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Safe Steering</h3>
+                    <p>Create your independence.</p>
+                    <p class="footer-tagline">Dedicated | Experienced | Safety-focused</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p>📞 <a href="tel:0433021077">0433 021 077</a></p>
+                    <p>📧 <a href="mailto:info@driveityourself.com">info@driveityourself.com</a></p>
+                    <p>🕐 Monday - Sunday: 7am - 6pm</p>
+                    <p>After hours by appointment only</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Service Areas</h4>
+                    <p>Rockingham</p>
+                    <p>Mandurah</p>
+                    <p>Surrounding Suburbs</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Safe Steering. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="nav.js"></script>
+    <script src="bookings.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
 

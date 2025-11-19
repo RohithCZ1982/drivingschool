@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - Drive It Yourself</title>
+    <title>About Us - Safe Steering</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,8 +14,16 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
-                <h1>🚗 Drive It Yourself</h1>
-                <p class="tagline">Create your independence.</p>
+                <div class="logo-container">
+                    <img src="logo.svg" alt="Safe Steering Logo" class="logo-img">
+                    <h1>Safe Steering</h1>
+                </div>
+                <p class="tagline">Professional Driving School</p>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
@@ -23,14 +31,9 @@
                 <li><a href="services.html">Services</a></li>
                 <li><a href="contact.html">Contact</a></li>
             </ul>
-            <div class="nav-cta">
-                <a href="tel:0437483154" class="btn-call">📞 CALL US NOW</a>
-                <a href="contact.html" class="btn-primary">Book a Lesson</a>
-            </div>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
+            <div class="nav-actions" id="nav-actions">
+                <a href="tel:0433021077" class="btn-icon" title="Call Us"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 5a2 2 0 0 1 2-2h3.28a1 1 0 0 1 .948.684l1.498 4.493a1 1 0 0 1-.502 1.21l-2.257 1.13a11.042 11.042 0 0 0 5.516 5.516l1.13-2.257a1 1 0 0 1 1.21-.502l4.493 1.498a1 1 0 0 1 .684.949V19a2 2 0 0 1-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                <a href="contact.html" class="btn-icon btn-icon-book" title="Book a Lesson"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 4h-1V2a1 1 0 0 0-2 0v2H8V2a1 1 0 0 0-2 0v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM5 8h14v12H5V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 2v4M16 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></a>
             </div>
         </div>
     </nav>
@@ -39,7 +42,7 @@
     <section class="page-header">
         <div class="container">
             <h1>About Us</h1>
-            <p>Learn more about Drive It Yourself</p>
+            <p>Learn more about Safe Steering</p>
         </div>
     </section>
 
@@ -47,7 +50,7 @@
     <section class="about-content">
         <div class="container">
             <div class="about-intro">
-                <h2>Welcome to Drive It Yourself</h2>
+                <h2>Welcome to Safe Steering</h2>
                 <p>
                     We are a locally owned and operated driving school servicing Mandurah, Rockingham, 
                     and surrounding suburbs throughout the Peel region. We are a small team of qualified 
@@ -57,7 +60,7 @@
                 <p>
                     We take pride in the service that we deliver and do everything we can to prepare 
                     our students for their long-awaited PDA (Practical Driving Assessment). With flexible 
-                    lesson times and comprehensive driving experience, Drive It Yourself will get you out 
+                    lesson times and comprehensive driving experience, Safe Steering will get you out 
                     of the passenger seat and into the driver's seat, creating that independence we all desire!
                 </p>
             </div>
@@ -100,7 +103,7 @@
             <div class="about-mission">
                 <h2>Our Mission</h2>
                 <p>
-                    At Drive It Yourself, we place a huge focus on safety to ensure that our students are 
+                    At Safe Steering, we place a huge focus on safety to ensure that our students are 
                     equipped with the best knowledge, so they can safely get from A to B. We take pride in 
                     our ability to ensure our students are confident and capable behind the wheel before 
                     sitting their test.
@@ -158,7 +161,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>Drive It Yourself</h3>
+                    <h3>Safe Steering</h3>
                     <p>Create your independence.</p>
                     <p class="footer-tagline">Dedicated | Experienced | Safety-focused</p>
                 </div>
@@ -173,7 +176,7 @@
                 </div>
                 <div class="footer-section">
                     <h4>Contact Info</h4>
-                    <p>📞 <a href="tel:0437483154">0437 483 154</a></p>
+                    <p>📞 <a href="tel:0433021077">0433 021 077</a></p>
                     <p>📧 <a href="mailto:info@driveityourself.com">info@driveityourself.com</a></p>
                     <p>🕐 Monday - Sunday: 7am - 6pm</p>
                     <p>After hours by appointment only</p>
@@ -186,11 +189,12 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Drive It Yourself. All rights reserved.</p>
+                <p>&copy; 2024 Safe Steering. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
+    <script src="nav.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
